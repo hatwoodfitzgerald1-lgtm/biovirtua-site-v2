@@ -1,0 +1,17 @@
+{
+  "name": "biovirtua-site",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "node scripts/build-pages.mjs || true",
+    "prebuild": "node scripts/build-pages.mjs",
+    "dev": "node scripts/build-pages.mjs && astro dev",
+    "build": "node scripts/build-pages.mjs && astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^4.16.18",
+    "@astrojs/cloudflare": "^11.2.0"
+  }
+}
