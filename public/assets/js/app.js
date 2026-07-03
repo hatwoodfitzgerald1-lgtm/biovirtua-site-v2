@@ -222,6 +222,7 @@
     var lis=items.map(function(i){var per=i.oneTime?'one time':(i.cadence==='annual'?'billed annually':'billed monthly');return '<div class="li"><span>'+i.name+'<span class="meta"> · '+per+'</span></span><span class="mono">'+money(priceOf(i)*(i.qty||1))+'</span></div>';}).join('');
     var total=items.reduce(function(s,i){return s+priceOf(i)*(i.qty||1);},0);
     box.querySelector('.lines').innerHTML=lis;
+    var gs=box.querySelector('.grand-sub'); if(gs)gs.textContent=money(total);
     box.querySelector('.grand .v').textContent=money(total);
   }
   function luhn(n){n=(n||'').replace(/\D/g,'');if(n.length<13)return false;var s=0,a=false;for(var i=n.length-1;i>=0;i--){var d=+n[i];if(a){d*=2;if(d>9)d-=9;}s+=d;a=!a;}return s%10===0;}

@@ -99,7 +99,7 @@
 'void main(){',
 '  vec2 c=gl_PointCoord-0.5; float d=length(c);',
 '  if(d>0.5)discard;',
-'  float alpha=smoothstep(0.5,0.0,d);',
+'  float alpha=smoothstep(0.5,0.28,d);',
 '  vec3 col=mix(uColA,uColB,vLife);',
 '  gl_FragColor=vec4(col,alpha*uOpacity);',
 '}'].join('\n');
