@@ -47,22 +47,29 @@
     return lenis;
   }
 
-  /* ---------- reveals + counters (IntersectionObserver) ---------- */
+  /* ---------- reveals + counters (bulletproof: never leave content hidden) ---------- */
+  function doReveal(el){
+    if(el.classList.contains('in'))return;
+    el.classList.add('in');
+    if(el.hasAttribute('data-stagger')){ var k=0; [].forEach.call(el.children,function(c){c.style.transitionDelay=(k*70)+'ms';k++;}); }
+    if(el.querySelectorAll){ el.querySelectorAll('[data-count]').forEach(count); if(el.hasAttribute('data-count'))count(el); }
+    if(el.querySelectorAll){ el.querySelectorAll('.bar i[data-w]').forEach(function(b){b.style.width=b.getAttribute('data-w');}); }
+  }
   function reveals(){
-    var els=document.querySelectorAll('[data-reveal],[data-stagger]');
-    if(prefersRM){els.forEach(function(e){e.classList.add('in');}); countAll(); return;}
-    var io=new IntersectionObserver(function(en){
-      en.forEach(function(x){ if(x.isIntersecting){ x.target.classList.add('in');
-        if(x.target.hasAttribute('data-stagger')){ var k=0; [].forEach.call(x.target.children,function(c){c.style.transitionDelay=(k*70)+'ms';k++;}); }
-        if(x.target.querySelectorAll){ x.target.querySelectorAll('[data-count]').forEach(count); if(x.target.hasAttribute('data-count'))count(x.target); }
-        if(x.target.querySelectorAll){ x.target.querySelectorAll('.bar i[data-w]').forEach(function(b){b.style.width=b.getAttribute('data-w');}); }
-        io.unobserve(x.target);
-      }});
-    },{threshold:.16,rootMargin:'0px 0px -8% 0px'});
-    els.forEach(function(e){io.observe(e);});
-    // standalone counters/bars not wrapped
-    document.querySelectorAll('[data-count]').forEach(function(e){io.observe(e);});
-    document.querySelectorAll('.bar i[data-w]').forEach(function(b){io.observe(b.closest('.tile,.appbody,.device,section')||b);});
+    var els=[].slice.call(document.querySelectorAll('[data-reveal],[data-stagger]'));
+    if(prefersRM){els.forEach(doReveal); countAll(); return;}
+    var vh=window.innerHeight||800;
+    function revealInView(){ els.forEach(function(e){ if(e.classList.contains('in'))return; var r=e.getBoundingClientRect(); if(r.top < vh*0.92 && r.bottom > 0) doReveal(e); }); }
+    // 1) reveal anything already on-screen right away (independent of IO timing)
+    revealInView();
+    // 2) IntersectionObserver for the rest as they scroll in
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(en){ en.forEach(function(x){ if(x.isIntersecting){ doReveal(x.target); io.unobserve(x.target); } }); },{threshold:0.12,rootMargin:'0px 0px -6% 0px'});
+      els.forEach(function(e){ if(!e.classList.contains('in')) io.observe(e); });
+    }
+    // 3) also catch on scroll (belt and suspenders) and a hard failsafe so nothing ever stays hidden
+    window.addEventListener('scroll',revealInView,{passive:true});
+    setTimeout(function(){ els.forEach(doReveal); },1800);
   }
   function countAll(){document.querySelectorAll('[data-count]').forEach(function(e){e.textContent=e.getAttribute('data-count');}); document.querySelectorAll('.bar i[data-w]').forEach(function(b){b.style.width=b.getAttribute('data-w');});}
   function count(el){

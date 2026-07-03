@@ -121,10 +121,11 @@
       geo.setAttribute('aP3',new THREE.BufferAttribute(tg[3],3));
       var rnd=new Float32Array(COUNT); for(var i=0;i<COUNT;i++)rnd[i]=Math.random();
       geo.setAttribute('aR',new THREE.BufferAttribute(rnd,1));
-      uniforms={uMorph:{value:introMorph},uTime:{value:0},uSize:{value:scene==='signature'?2.2:1.9},
+      uniforms={uMorph:{value:introMorph},uTime:{value:0},uSize:{value:scene==='signature'?1.5:1.5},
         uKeys:{value:scene==='signature'?3.0:1.0},
-        uColA:{value:new THREE.Color(0x22C7D6)},uColB:{value:new THREE.Color(0xFF6A4D)},uOpacity:{value:0.92}};
-      var mat=new THREE.ShaderMaterial({uniforms:uniforms,vertexShader:vert,fragmentShader:frag,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
+        uColA:{value:new THREE.Color(0x2ad4e3)},uColB:{value:new THREE.Color(0xFF6A4D)},uOpacity:{value:0.9}};
+      // NormalBlending (not additive) so overlapping points read as a teal->coral figure, never a blown-out white mass
+      var mat=new THREE.ShaderMaterial({uniforms:uniforms,vertexShader:vert,fragmentShader:frag,transparent:true,depthWrite:false,blending:THREE.NormalBlending});
       points=new THREE.Points(geo,mat); threeScene.add(points);
       if(poster)poster.style.opacity='0';
       // intro assemble
